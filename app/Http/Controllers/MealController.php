@@ -37,9 +37,6 @@ class MealController extends Controller
 
             if ($mealResults['meal_rate'] <= $customerResults['balance']) {
 
-
-
-
                 $mealCount = MealModel::where(['studentID' => $studentID, 'created_at' => $time])->count();
                 if ($mealCount != 0) {
                     $mealCount1 = MealModel::where(['studentID' => $studentID, 'created_at' => $time, 'total_meal' => 0])->count();
@@ -95,24 +92,29 @@ class MealController extends Controller
 
     function deleteMealByID(Request $request)
     {
-        $id = $request->input('id');
+        $created_at = $request->input('created_at');
         $transactionID = $this->set_number();
 
         $date = Carbon::now("Asia/Dhaka");
         $current_date = $date->format('Y-m-d H:i:s');
 
-        $resultCount = MealModel::where('id', $id)->count();
+        $resultCount = MealModel::where('created_at', $created_at)->count();
         if ($resultCount != 0) {
 
-            $resultData = MealModel::where('id', $id)->first();
-            $result = MealModel::where('id', $id)->delete();
+            $resultData = MealModel::where('created_at', $created_at)->first();
+            $result = MealModel::where('created_at', $created_at)->delete();
 
             if ($result == true) {
                 $mealResults = OtherModel::first();
                 $customerResults = RegistrationModel::where(['studentID' => $resultData['studentID']])->first();
+                $sum=$mealResults['meal_rate'];
+                
+                if($resultData['total_meal']==2){
+                    $sum = $sum+ $mealResults['guest_meal_rate'];
+                }
+                TransactionModel::insert(['studentID' => $resultData['studentID'], 'created_at' => $current_date, "amount" => $sum, 'isIn' => 0, "transactionID" => $transactionID,'purpose'=>"Meal Cancel"]);
+                $updateBalance = $customerResults['balance'] + $sum;
 
-                TransactionModel::insert(['studentID' => $resultData['studentID'], 'created_at' => $current_date, "amount" => $mealResults['meal_rate'], 'isIn' => 0, "transactionID" => $transactionID,'purpose'=>"Meal Cancel"]);
-                $updateBalance = $customerResults['balance'] + $mealResults['meal_rate'];
                 RegistrationModel::where(['studentID' => $resultData['studentID']])->update(['balance' => $updateBalance]);
 
                 return response()->json(['message' => 'Meal Delete Successfully', 'statusCode' => 200])->setStatusCode(200);
@@ -130,8 +132,7 @@ class MealController extends Controller
     function addGuestMeal(Request $request)
     {
         $studentID = $request->input('studentID');
-        $id = $request->input('id');
-        $time = $request->input('time');
+        $created_at = $request->input('created_at');
         $transactionID = $this->set_number();
 
         $date = Carbon::now("Asia/Dhaka");
@@ -145,9 +146,9 @@ class MealController extends Controller
 
             if ($mealResults['guest_meal_rate'] <= $customerResults['balance']) {
 
-                $mealTempDataBeforeUpdate = MealModel::where('id', $id)->first();
+                $mealTempDataBeforeUpdate = MealModel::where('created_at', $created_at)->first();
 
-                $result = MealModel::where('id', $id)->update(['total_meal' => 2, 'updated_at' => $time]);
+                $result = MealModel::where('created_at', $created_at)->update(['total_meal' => 2, 'updated_at' => $current_date]);
 
                 if ($result == true) {
                     if ($mealTempDataBeforeUpdate['total_meal'] != 2) {
@@ -176,17 +177,17 @@ class MealController extends Controller
 
     function deleteGuestMealByID(Request $request)
     {
-        $id = $request->input('id');
+        $created_at = $request->input('created_at');
         $transactionID = $this->set_number();
 
         $date = Carbon::now("Asia/Dhaka");
         $current_date = $date->format('Y-m-d H:i:s');
 
-        $resultCount = MealModel::where('id', $id)->count();
+        $resultCount = MealModel::where('created_at', $created_at)->count();
         if ($resultCount != 0) {
 
-            $resultData = MealModel::where('id', $id)->first();
-            $result = MealModel::where('id', $id)->update(['total_meal' => 1]);
+            $resultData = MealModel::where('created_at', $created_at)->first();
+            $result = MealModel::where('created_at', $created_at)->update(['total_meal' => 1]);
 
             if ($result == true) {
                 $mealResults = OtherModel::first();
