@@ -13,13 +13,29 @@ class OtherController extends Controller
 
         $amount = $request->input('amount');
 
-        $result = OtherModel::where('id', 1)->update(['meal_rate' => $amount]);
+        $result = OtherModel::where('id', 1)->update(['fine_rate' => $amount]);
 
         if ($result == true) {
             return response()->json(['message' => 'Meal Rate Update Successfully', 'statusCode' => 200])->setStatusCode(200);
 
         } else {
             return response()->json(['message' => 'Meal Rate Update Failed', 'statusCode' => 404])->setStatusCode(404);
+        }
+    }
+
+    
+    function updateFineAmmount(Request $request)
+    {
+
+        $amount = $request->input('amount');
+
+        $result = OtherModel::where('id', 1)->update(['meal_rate' => $amount]);
+
+        if ($result == true) {
+            return response()->json(['message' => 'Fine Rate Update Successfully', 'statusCode' => 200])->setStatusCode(200);
+
+        } else {
+            return response()->json(['message' => 'Fine Rate Update Failed', 'statusCode' => 404])->setStatusCode(404);
         }
     }
 

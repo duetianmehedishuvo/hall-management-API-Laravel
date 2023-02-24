@@ -57,6 +57,7 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->post('/updateGuestMealRate','OtherController@updateGuestMealRate');
         $router->post('/chanegGuestMealAddedStatus','OtherController@chanegGuestMealAddedStatus');
         $router->get('/getConfig','OtherController@getConfig');
+        $router->post('/updateFineAmmount','OtherController@updateFineAmmount');
         $router->post('/updateOfflineTakaCollectTime','OtherController@updateOfflineTakaCollectTime');
 
         // TODO: for Meal Controllers
@@ -76,6 +77,15 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->delete('/deleteComplain','ComplainController@deleteComplain');
         $router->post('/editComplain','ComplainController@editComplain');
         $router->get('/getUserAllComplainByID','ComplainController@getUserAllComplainByID');
+
+        // TODO: for Transaction Controllers
+        $router->post('/addHallFee','HallFeeController@addHallFee');
+        $router->post('/fineHallFee','HallFeeController@fineHallFee');
+        $router->post('/payNow','HallFeeController@payNow');
+        $router->delete('/deleteHallFee','HallFeeController@deleteHallFee');
+        $router->get('/getUserAllHallFeeByID','HallFeeController@getUserAllHallFeeByID');
+        $router->get('/getUserAllSubHallFeeByID','HallFeeController@getUserAllSubHallFeeByID');
+        $router->get('/hallFeeSummery','HallFeeController@hallFeeSummery');
 
    });
 });
