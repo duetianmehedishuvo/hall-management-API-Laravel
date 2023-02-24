@@ -70,5 +70,12 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->get('/getAllTransctionList','TransactionController@getAllTransctionList');
         $router->get('/getUserAllTransAction','TransactionController@getUserAllTransAction');
 
+        // TODO: for Transaction Controllers
+        $router->post('/addComplain','ComplainController@addComplain');
+        $router->post('/replyComplain','ComplainController@replyComplain');
+        $router->delete('/deleteComplain','ComplainController@deleteComplain');
+        $router->post('/editComplain','ComplainController@editComplain');
+        $router->get('/getUserAllComplainByID','ComplainController@getUserAllComplainByID');
+
    });
 });
