@@ -135,4 +135,20 @@ class ComplainController extends Controller
 
     }
 
+    function getUserAllComplain(Request $request)
+    {
+       
+        $result = ComplainModel::orderby('create_at','desc')->paginate(10);
+
+        if ($result == true) {
+
+            return response()->json($result,200);
+
+        } else {
+            return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
+
+        }
+
+    }
+
 }

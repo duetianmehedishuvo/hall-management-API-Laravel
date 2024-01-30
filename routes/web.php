@@ -42,6 +42,7 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->post('/resetPassword', 'RegistrationController@resetPassword');
         $router->get('/searchStudent', 'RegistrationController@searchStudent');
         $router->post('/shareBalance', 'RegistrationController@shareBalance');
+        $router->get('/getBalance', 'LoginController@getBalance');
         $router->post('/logout', 'LoginController@logout');
 
         // TODO: for Room Controller
@@ -66,17 +67,19 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->get('/getAllMealByStudentID','MealController@getAllMealByStudentID');
         $router->delete('/deleteMealByID','MealController@deleteMealByID');
         $router->delete('/deleteGuestMealByID','MealController@deleteGuestMealByID');
+        $router->get('/checkTodayMeal','MealController@checkTodayMeal');
 
         // TODO: for Transaction Controllers
         $router->get('/getAllTransctionList','TransactionController@getAllTransctionList');
         $router->get('/getUserAllTransAction','TransactionController@getUserAllTransAction');
 
-        // TODO: for Transaction Controllers
+        // TODO: for Complain
         $router->post('/addComplain','ComplainController@addComplain');
         $router->post('/replyComplain','ComplainController@replyComplain');
         $router->delete('/deleteComplain','ComplainController@deleteComplain');
         $router->post('/editComplain','ComplainController@editComplain');
         $router->get('/getUserAllComplainByID','ComplainController@getUserAllComplainByID');
+        $router->get('/getUserAllComplain','ComplainController@getUserAllComplain');
 
         // TODO: for Transaction Controllers
         $router->post('/addHallFee','HallFeeController@addHallFee');
@@ -86,6 +89,20 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->get('/getUserAllHallFeeByID','HallFeeController@getUserAllHallFeeByID');
         $router->get('/getUserAllSubHallFeeByID','HallFeeController@getUserAllSubHallFeeByID');
         $router->get('/hallFeeSummery','HallFeeController@hallFeeSummery');
+        $router->get('/getUserAllHallFee','HallFeeController@getUserAllHallFee');
+
+        
+        // TODO: for Book Gust Room
+        $router->post('/addGuestRoomBook','GuestRoomController@addGuestRoomBook');
+        $router->post('/acceptRoom','GuestRoomController@acceptRoom');
+        $router->get('/getMyRoomAssignByID','GuestRoomController@getMyRoomAssignByID');
+        $router->get('/getAllRoomAssignList','GuestRoomController@getAllRoomAssignList');
+
+        
+        // TODO: for Book Gust Room
+        $router->post('/addEmergency','EmergencyController@addEmergency');
+        $router->get('/getAllEmergency','EmergencyController@getAllEmergency');
+        
 
    });
 });

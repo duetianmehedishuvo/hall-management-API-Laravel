@@ -24,7 +24,6 @@ class HallFeeController extends Controller
         $amount = $request->input('amount');
         $purpose = $request->input('purpose');
         $type = $request->input('type');
-        $transactionID = $this->set_number();
 
         $date = Carbon::now("Asia/Dhaka");
         $current_date = $date->format('Y-m-d H:i:s');
@@ -36,7 +35,6 @@ class HallFeeController extends Controller
             $result = HallFeeModel::insert([
                 'studentID' => $user['studentID'],
                 'amount' => $amount,
-                'transactionID' => $transactionID,
                 'purpose' => $purpose,
                 'due' => $amount,
                 'type' => $type,
@@ -66,6 +64,7 @@ class HallFeeController extends Controller
 
         $users = HallFeeModel::where([['due', '>', 0], ['type', '=', 0]])->get();
         $mealResults = OtherModel::first();
+        $status = 0;
 
         foreach ($users as $user) {
 
@@ -73,6 +72,7 @@ class HallFeeController extends Controller
             $compareTime = $date2->diffInMonths($current_date);
 
             if ($compareTime > 0) {
+                $status = 1;
                 for ($i = 0; $i < $compareTime; $i++) {
 
                     $nextMonth = Carbon::createFromFormat('Y-m-d H:i:s', $user['lastFineTime'])->addMonths($i + 1);
@@ -84,7 +84,7 @@ class HallFeeController extends Controller
                         'updated_at' => $current_date
                     ]);
 
-                    $result = HallFeeDetailsModel::insert([
+                    $result1 = HallFeeDetailsModel::insert([
                         'hallfeeID' => $user['id'],
                         'money' => $mealResults['fine_rate'],
                         'purpose' => 'Hall Fee Fine',
@@ -95,19 +95,21 @@ class HallFeeController extends Controller
             }
 
         }
-
-        if ($result == true) {
-
-            return response()->json(['message' => 'Hall Fee Fine Assign Successfully'], 200);
-
+        if ($status == 0) {
+            return response()->json(['message' => 'Already Assign Thanks'], 200);
         } else {
-            return response()->json(['message' => 'Assign Faild Please Try Again Later', 'statusCode' => 404], 404);
+            if ($result == true) {
 
+                return response()->json(['message' => 'Hall Fee Fine Assign Successfully'], 200);
+
+            } else {
+                return response()->json(['message' => 'Assign Faild Please Try Again Later', 'statusCode' => 404], 404);
+
+            }
         }
+
+
     }
-
-
-
 
     function payNow(Request $request)
     {
@@ -120,7 +122,7 @@ class HallFeeController extends Controller
 
         $users = HallFeeModel::where('id', $id)->first();
         if ($users['due'] == $amount) {
-           HallFeeModel::where('id', $id)->update([
+            HallFeeModel::where('id', $id)->update([
                 'due' => 0,
                 'fine' => 0,
                 'updated_at' => $current_date
@@ -133,7 +135,7 @@ class HallFeeController extends Controller
                 'created_date' => $current_date
             ]);
 
-            TransactionModel::insert(['studentID' => $users['studentID'], 'created_at' => $current_date, "amount" => $amount, 'isIn' => 0, "transactionID" => $transactionID,'purpose'=>"Hall Fee Added"]);
+            TransactionModel::insert(['studentID' => $users['studentID'], 'created_at' => $current_date, "amount" => $amount, 'isIn' => 0, "transactionID" => $transactionID, 'purpose' => "Hall Fee Added"]);
 
             return response()->json(['message' => 'Pay Successfully', 'statusCode' => 200], 200);
 
@@ -156,15 +158,31 @@ class HallFeeController extends Controller
     }
 
 
+
+    function getUserAllHallFee(Request $request)
+    {
+
+        $result = HallFeeModel::orderby('created_at', 'desc')->paginate(10);
+
+        if ($result == true) {
+
+            return response()->json($result, 200);
+
+        } else {
+            return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
+
+        }
+    }
+
     function getUserAllHallFeeByID(Request $request)
     {
         $studentID = $request->input('studentID');
 
-        $result = HallFeeModel::where('studentID', $studentID)->orderby('created_at','desc')->paginate(10);
+        $result = HallFeeModel::where('studentID', $studentID)->orderby('created_at', 'desc')->paginate(10);
 
         if ($result == true) {
 
-            return response()->json($result,200);
+            return response()->json($result, 200);
 
         } else {
             return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
@@ -172,22 +190,23 @@ class HallFeeController extends Controller
         }
     }
 
-    
+
     function getUserAllSubHallFeeByID(Request $request)
     {
         $id = $request->input('id');
 
-        $result = HallFeeDetailsModel::where('hallfeeID', $id)->orderby('created_date','desc')->paginate(10);
+        $result = HallFeeDetailsModel::where('hallfeeID', $id)->orderby('created_date', 'desc')->paginate(10);
 
         if ($result == true) {
 
-            return response()->json($result,200);
+            return response()->json($result, 200);
 
         } else {
             return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
 
         }
     }
+
 
 
     function hallFeeSummery(Request $request)
@@ -195,15 +214,15 @@ class HallFeeController extends Controller
         $studentID = $request->input('studentID');
 
         $result = HallFeeModel::where('studentID', $studentID)->get();
-        
+
 
         if ($result == true) {
-            $ammount=0;
-            foreach ( $result as $resultStudent){
-                $ammount=$ammount+$resultStudent['due'];
+            $ammount = 0;
+            foreach ($result as $resultStudent) {
+                $ammount = $ammount + $resultStudent['due'];
             }
 
-            return response()->json(["balance"=>$ammount],200);
+            return response()->json(["balance" => $ammount], 200);
 
         } else {
             return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);

@@ -6,10 +6,28 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use App\Models\RegistrationModel;
+use App\Models\HallFeeModel;
 // @CrossOrigin(maxAge = 3600)
 
 class LoginController extends Controller
 {
+    
+    function getBalance(Request $request)
+    {
+        
+        $studentID = $request->input('studentID');
+        $user = RegistrationModel::where(["studentID" => $studentID])->get()->first();
+        $result = HallFeeModel::where('studentID', $studentID)->get();
+        $ammount=0;
+        foreach ( $result as $resultStudent){
+            $ammount=$ammount+$resultStudent['due'];
+        }
+
+
+        return response()->json(['due' => $ammount,'balance'=>$user['balance']]);
+    }
+
+
     function onLogin(Request $request)
     {
         
@@ -26,7 +44,9 @@ class LoginController extends Controller
                 "exp" => time() + 3600*24*15
             );
             $jwt = JWT::encode($payload, $key, 'HS256');
-            return response()->json(['message' => ' Login Success','token' => $jwt,  'user' => $user]);
+
+            
+            return response()->json(['message' => ' Login Success','token' => $jwt, 'user' => $user]);
            
                 
         } else {

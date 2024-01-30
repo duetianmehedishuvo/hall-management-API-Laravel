@@ -208,5 +208,22 @@ class MealController extends Controller
     }
 
 
+    
+    function checkTodayMeal(Request $request)
+    {
+        $created_at = $request->input('created_at');
+
+        $result = MealModel::where('created_at', $created_at)->get();
+        if ($result == true) {
+
+            return response()->json($result)->setStatusCode(200);
+
+        } else {
+            return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
+
+        }
+    }
+
+
 
 }
