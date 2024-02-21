@@ -23,10 +23,10 @@ $router->group(['prefix'=>'api'],function() use ($router){
    // TODO: for Authentication
     $router->post('/register', 'RegistrationController@onRegister');
     $router->post('/login', 'LoginController@onLogin');
-    
-    
+
+
    $router->group(['middleware'=>'auth'],function() use ($router){
-    
+
     // TODO: for Test Token
         $router->post('/tokenTest', 'LoginController@tokenTest');
 
@@ -51,7 +51,7 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->get('/getAllRoomsByYear','RoomController@getAllRoomsByYearRoomNo');
         $router->get('/updateRoomStatusByStudentID','RoomController@updateRoomStatusByStudentID');
         $router->delete('/deleteStudentsRoom','RoomController@deleteStudentsRoom');
-        
+
 
         // TODO: for Other Controllers
         $router->post('/updateMealRate','OtherController@updateMealRate');
@@ -68,6 +68,7 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->delete('/deleteMealByID','MealController@deleteMealByID');
         $router->delete('/deleteGuestMealByID','MealController@deleteGuestMealByID');
         $router->get('/checkTodayMeal','MealController@checkTodayMeal');
+        $router->get('/checkStudentTodayMailByRFID','MealController@checkStudentTodayMailByRFID');
 
         // TODO: for Transaction Controllers
         $router->get('/getAllTransctionList','TransactionController@getAllTransctionList');
@@ -91,18 +92,19 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->get('/hallFeeSummery','HallFeeController@hallFeeSummery');
         $router->get('/getUserAllHallFee','HallFeeController@getUserAllHallFee');
 
-        
+
         // TODO: for Book Gust Room
         $router->post('/addGuestRoomBook','GuestRoomController@addGuestRoomBook');
         $router->post('/acceptRoom','GuestRoomController@acceptRoom');
         $router->get('/getMyRoomAssignByID','GuestRoomController@getMyRoomAssignByID');
         $router->get('/getAllRoomAssignList','GuestRoomController@getAllRoomAssignList');
+        $router->get('/deleteGuestRoomBook','GuestRoomController@deleteGuestRoomBook');
 
-        
+
         // TODO: for Book Gust Room
         $router->post('/addEmergency','EmergencyController@addEmergency');
         $router->get('/getAllEmergency','EmergencyController@getAllEmergency');
-        
+
 
    });
 });

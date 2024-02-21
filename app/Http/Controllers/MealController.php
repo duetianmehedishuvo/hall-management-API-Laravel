@@ -52,7 +52,7 @@ class MealController extends Controller
                 }
 
                 if ($result == true) {
-                    TransactionModel::insert(['studentID' => $studentID, 'created_at' => $current_date, "amount" => $mealResults['meal_rate'], 'isIn' => 1, "transactionID" => $transactionID,'purpose'=>"Meal Added"]);
+                    TransactionModel::insert(['studentID' => $studentID, 'created_at' => $current_date, "amount" => $mealResults['meal_rate'], 'isIn' => 1, "transactionID" => $transactionID, 'purpose' => "Meal Added"]);
                     $updateBalance = $customerResults['balance'] - $mealResults['meal_rate'];
                     RegistrationModel::where(['studentID' => $studentID])->update(['balance' => $updateBalance]);
 
@@ -107,12 +107,12 @@ class MealController extends Controller
             if ($result == true) {
                 $mealResults = OtherModel::first();
                 $customerResults = RegistrationModel::where(['studentID' => $resultData['studentID']])->first();
-                $sum=$mealResults['meal_rate'];
-                
-                if($resultData['total_meal']==2){
-                    $sum = $sum+ $mealResults['guest_meal_rate'];
+                $sum = $mealResults['meal_rate'];
+
+                if ($resultData['total_meal'] == 2) {
+                    $sum = $sum + $mealResults['guest_meal_rate'];
                 }
-                TransactionModel::insert(['studentID' => $resultData['studentID'], 'created_at' => $current_date, "amount" => $sum, 'isIn' => 0, "transactionID" => $transactionID,'purpose'=>"Meal Cancel"]);
+                TransactionModel::insert(['studentID' => $resultData['studentID'], 'created_at' => $current_date, "amount" => $sum, 'isIn' => 0, "transactionID" => $transactionID, 'purpose' => "Meal Cancel"]);
                 $updateBalance = $customerResults['balance'] + $sum;
 
                 RegistrationModel::where(['studentID' => $resultData['studentID']])->update(['balance' => $updateBalance]);
@@ -126,7 +126,6 @@ class MealController extends Controller
 
         }
     }
-
 
 
     function addGuestMeal(Request $request)
@@ -152,7 +151,7 @@ class MealController extends Controller
 
                 if ($result == true) {
                     if ($mealTempDataBeforeUpdate['total_meal'] != 2) {
-                        TransactionModel::insert(['studentID' => $studentID, 'created_at' => $current_date, "amount" => $mealResults['guest_meal_rate'], 'isIn' => 1, "transactionID" => $transactionID,'purpose'=>"Guest Meal Added"]);
+                        TransactionModel::insert(['studentID' => $studentID, 'created_at' => $current_date, "amount" => $mealResults['guest_meal_rate'], 'isIn' => 1, "transactionID" => $transactionID, 'purpose' => "Guest Meal Added"]);
                         $updateBalance = $customerResults['balance'] - $mealResults['guest_meal_rate'];
                         RegistrationModel::where(['studentID' => $studentID])->update(['balance' => $updateBalance]);
 
@@ -174,7 +173,6 @@ class MealController extends Controller
     }
 
 
-
     function deleteGuestMealByID(Request $request)
     {
         $created_at = $request->input('created_at');
@@ -193,8 +191,8 @@ class MealController extends Controller
                 $mealResults = OtherModel::first();
                 $customerResults = RegistrationModel::where(['studentID' => $resultData['studentID']])->first();
 
-                TransactionModel::insert(['studentID' => $resultData['studentID'], 'created_at' => $current_date, "amount" => $mealResults['guest_meal_rate'], 'isIn' => 0, "transactionID" => $transactionID,'purpose'=>"Gust Meal Removed"]);
-                $updateBalance = $customerResults['balance'] + $mealResults['guest_meal_rate'] ;
+                TransactionModel::insert(['studentID' => $resultData['studentID'], 'created_at' => $current_date, "amount" => $mealResults['guest_meal_rate'], 'isIn' => 0, "transactionID" => $transactionID, 'purpose' => "Gust Meal Removed"]);
+                $updateBalance = $customerResults['balance'] + $mealResults['guest_meal_rate'];
                 RegistrationModel::where(['studentID' => $resultData['studentID']])->update(['balance' => $updateBalance]);
 
                 return response()->json(['message' => 'Guest Meal Remove Successfully', 'statusCode' => 200])->setStatusCode(200);
@@ -208,7 +206,6 @@ class MealController extends Controller
     }
 
 
-    
     function checkTodayMeal(Request $request)
     {
         $created_at = $request->input('created_at');
@@ -225,5 +222,29 @@ class MealController extends Controller
     }
 
 
+    function checkStudentTodayMailByRFID(Request $request)
+    {
+        $date = Carbon::now("Asia/Dhaka");
+        $current_date = $date->format('Y-m-d');
+        $rfID = $request->input('rfID');
+
+        $user = RegistrationModel::where(["rfID" => $rfID])->get();
+
+        if (count($user) != 0) {
+            $result = MealModel::where(['created_at' => $current_date, 'studentID' => $user[0]['studentID']])->get();
+            if (count($result) != 0) {
+                if ($result[0]['total_meal'] == 1) {
+                    return response()->json(['status' => 1])->setStatusCode(200);
+                } else {
+                    return response()->json(['status' => 2])->setStatusCode(200);
+                }
+            } else {
+                return response()->json(['status' => -1])->setStatusCode(200);
+            }
+
+        } else {
+            return response()->json(['status' => -1])->setStatusCode(200);
+        }
+    }
 
 }

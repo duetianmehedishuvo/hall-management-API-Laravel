@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GuestRoomModel;
+use App\Models\RoomModels;
 use Illuminate\Http\Request;
 use \Carbon\Carbon;
 use Firebase\JWT\JWT;
@@ -13,11 +14,11 @@ class GuestRoomController extends Controller
     function addGuestRoomBook(Request $request)
     {
         $roomNO = $request->input('roomNO');
-        $date = $request->input('date');      
-        $start_time = $request->input('start_time');      
-        $end_time = $request->input('end_time');      
-        $purpose = $request->input('purpose');      
-        $phoneNo = $request->input('phoneNo');      
+        $date = $request->input('date');
+        $start_time = $request->input('start_time');
+        $end_time = $request->input('end_time');
+        $purpose = $request->input('purpose');
+        $phoneNo = $request->input('phoneNo');
 
         $date = Carbon::now("Asia/Dhaka");
         $current_date = $date->format('Y-m-d H:i:s');
@@ -91,11 +92,16 @@ class GuestRoomController extends Controller
 
     function getAllRoomAssignList(Request $request)
     {
-       
-        $result = GuestRoomModel::orderby('create_at','desc')->paginate(10);
+        $searchType = $request->input('searchType'); //0 mean all //1 mean only accepted // 2 mean queue list only
+        if($searchType==0){
+            $result = GuestRoomModel::orderby('create_at','desc')->paginate(10);
+        }else if($searchType==1){
+            $result = GuestRoomModel::where('status',2)->orderby('create_at','desc')->paginate(10);
+        }else if($searchType==2){
+            $result = GuestRoomModel::where('status',0)->orderby('create_at','desc')->paginate(10);
+        }
 
         if ($result == true) {
-
             return response()->json($result,200);
 
         } else {
@@ -104,4 +110,20 @@ class GuestRoomController extends Controller
         }
 
     }
+
+
+    public function deleteGuestRoomBook(Request $request)
+    {
+        $id = $request->input('id');
+
+        $result = GuestRoomModel::where('id',$id)->delete();
+
+        if ($result == true) {
+            return response()->json(['message' => 'Delete successfully.', 'statusCode' => 200])->setStatusCode(200);
+        } else {
+            return response()->json(['message' => 'Failed to Delete Rooms', 'statusCode' => 404])->setStatusCode(404);
+        }
+    }
+
+
 }
