@@ -106,5 +106,15 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->get('/getAllEmergency','EmergencyController@getAllEmergency');
 
 
+        // TODO: for Community
+       $router->post('/post','CommunityController@post');
+       $router->delete('/deletePost','CommunityController@deletePost');
+       $router->get('/getAllPostByStudentID','CommunityController@getAllPostByStudentID');
+       $router->get('/getAllPost','CommunityController@getAllPost');
+       $router->post('/comment','CommunityController@comment');
+       $router->delete('/deleteCommend','CommunityController@deleteCommend');
+       $router->get('/getAllPostCommend','CommunityController@getAllPostCommend');
+
+
    });
 });
