@@ -115,6 +115,15 @@ $router->group(['prefix'=>'api'],function() use ($router){
        $router->delete('/deleteCommend','CommunityController@deleteCommend');
        $router->get('/getAllPostCommend','CommunityController@getAllPostCommend');
 
+        // TODO: for Library
+       $router->post('/book','LibraryController@book');
+       $router->delete('/deleteBook','LibraryController@deleteBook');
+       $router->get('/getAllBooks','LibraryController@getAllBooks');
+       $router->get('/searchQueryBook','LibraryController@searchQueryBook');
+       $router->post('/bookIssue','LibraryController@bookIssue');
+       $router->get('/bookPurchedHistoryByStudentID','LibraryController@bookPurchedHistoryByStudentID');
+       $router->get('/bookPurchedHistoryForAdmin','LibraryController@bookPurchedHistoryForAdmin');
+
 
    });
 });
