@@ -14,7 +14,6 @@ class GuestRoomController extends Controller
     function addGuestRoomBook(Request $request)
     {
         $roomNO = $request->input('roomNO');
-        $date = $request->input('date');
         $start_time = $request->input('start_time');
         $end_time = $request->input('end_time');
         $purpose = $request->input('purpose');
@@ -45,7 +44,7 @@ class GuestRoomController extends Controller
 
         if ($result == true) {
 
-            return response()->json(['message' => 'Guest Room Book Succesfull Created'])->setStatusCode(200);
+            return response()->json(['message' => 'Guest Room Book Successful Created'])->setStatusCode(200);
 
         } else {
             return response()->json(['message' => 'Guest Room Book added Fail Please Try Again Later', 'statusCode' => 404])->setStatusCode(404);

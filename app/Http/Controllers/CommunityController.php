@@ -165,7 +165,6 @@ class CommunityController extends Controller
                 'created_at' => $current_date
             ]);
         } else {
-
             $access_token = str_replace('Bearer ', '', $request->header('Authorization'));
             $key = env('TOKEN_KEY');
             $decoded = JWT::decode($access_token, new Key($key, 'HS256'));
@@ -215,14 +214,6 @@ class CommunityController extends Controller
         $community_id = $request->input('community_id');
 
 
-        $access_token = str_replace('Bearer ', '', $request->header('Authorization'));
-        $key = env('TOKEN_KEY');
-        $decoded = JWT::decode($access_token, new Key($key, 'HS256'));
-        $decoded_array = (array)$decoded;
-        $studentID = $decoded_array['studentID'];
-
-//        community_id	student_id	comment	created_at
-
         $result = DB::table('commend_table')
             ->leftJoin('studenttable', 'studenttable.studentID', '=', 'commend_table.student_id')
             ->select(
@@ -233,7 +224,7 @@ class CommunityController extends Controller
                 'commend_table.created_at',
                 'studenttable.name',
                 'studenttable.department'
-            )->where(['commend_table.student_id' => $studentID, 'commend_table.community_id' => $community_id])->orderBy('commend_table.created_at', 'desc')->paginate(10);
+            )->where(['commend_table.community_id' => $community_id])->orderBy('commend_table.created_at', 'desc')->paginate(10);
 
         if ($result == true) {
 
