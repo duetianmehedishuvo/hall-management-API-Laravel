@@ -139,50 +139,94 @@ class LibraryController extends Controller
         }
     }
 
+    function getAllRoomsByYearRoomNo(Request $request)
+    {
+        $roomNo = $request->input('roomNo');
 
-    function bookPurchedHistoryByStudentID(Request $request)
+        $activeStudents = DB::table('roomtable')
+            ->leftJoin('studenttable', 'studenttable.studentID', '=', 'roomtable.studentID')
+            ->select(
+                'roomtable.id',
+                'roomtable.isAvaible',
+                'roomtable.studentID',
+                'roomtable.year',
+                'roomtable.updated_at',
+                'studenttable.name',
+                'studenttable.department'
+            )->where(['roomtable.roomNo' => $roomNo, 'roomtable.isAvaible' => 1])->orderBy('roomtable.id', 'desc')->get();
+
+
+        $inactiveStudents = DB::table('roomtable')
+            ->leftJoin('studenttable', 'studenttable.studentID', '=', 'roomtable.studentID')
+            ->select(
+                'roomtable.id',
+                'roomtable.isAvaible',
+                'roomtable.studentID',
+                'roomtable.year',
+                'roomtable.updated_at',
+                'studenttable.name',
+                'studenttable.department'
+            )->where(['roomtable.roomNo' => $roomNo, 'roomtable.isAvaible' => 0])->orderBy('roomtable.year', 'desc')->get();
+
+        return response()->json(['activeStudents' => $activeStudents, 'inactiveStudents' => $inactiveStudents])->setStatusCode(200);
+
+    }
+
+
+    function bookPurchedHistory(Request $request)
     {
         $studentID = $request->input('studentID');
         $type = $request->input('type');
+        $isAdmin = $request->input('isAdmin');
+
+        $selectColumns = ['book_purched_table.id',
+            'book_purched_table.book_id',
+            'book_purched_table.student_id',
+            'book_purched_table.student_id',
+            'book_purched_table.updated_at',
+            'book_purched_table.created_at',
+            'book_purched_table.status',
+            'book_table.title',
+            'book_table.author',
+            'book_table.author',
+            'book_table.price',
+            'book_table.category'];
+
+        $result = DB::table('book_purched_table')
+            ->leftJoin('book_table', 'book_table.id', '=', 'book_purched_table.book_id')
+            ->select($selectColumns);
 
         if ($type == 'All') {
-            $result = BookPurchedModel::where('student_id', $studentID)->orderBy('updated_at', 'desc')->paginate(10);
+            if ($isAdmin == 1)
+                $result = $result->where('book_purched_table.status', 0)->orWhere('book_purched_table.status', 2);
+            else
+                $result = $result->where(['book_purched_table.student_id' => $studentID]);
+
+
         } else if ($type == 'Renew') {
-            $result = BookPurchedModel::where(['student_id' => $studentID, 'status' => 0])->orderBy('updated_at', 'desc')->paginate(10);
+            if ($isAdmin == 1)
+                $result = $result->where('book_purched_table.status', 0);
+            else
+                $result = $result->where(['book_purched_table.student_id' => $studentID, 'status' => 0]);
+
+
         } else if ($type == 'Return') {
-            $result = BookPurchedModel::where(['student_id' => $studentID, 'status' => 2])->orderBy('updated_at', 'desc')->paginate(10);
+            if ($isAdmin == 1)
+                $result = $result->where('book_purched_table.status', 2);
+            else
+                $result = $result->where(['book_purched_table.student_id' => $studentID, 'status' => 2]);
         }
+
+        $result = $result->orderBy('book_purched_table.updated_at', 'desc')->paginate(10);
 
         if ($result == true) {
             return response()->json($result)->setStatusCode(200);
-
         } else {
             return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
 
         }
     }
 
-
-    function bookPurchedHistoryForAdmin(Request $request)
-    {
-        $type = $request->input('type');
-
-        if ($type == 'All') {
-            $result = BookPurchedModel::where('status', 0)->orWhere('status', 2)->orderBy('updated_at', 'desc')->paginate(10);
-        } else if ($type == 'Renew') {
-            $result = BookPurchedModel::where(['status' => 0])->orderBy('updated_at', 'desc')->paginate(10);
-        } else if ($type == 'Return') {
-            $result = BookPurchedModel::where(['status' => 2])->orderBy('updated_at', 'desc')->paginate(10);
-        }
-
-        if ($result == true) {
-            return response()->json($result)->setStatusCode(200);
-
-        } else {
-            return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
-
-        }
-    }
 
 
     function cardIssue(Request $request)

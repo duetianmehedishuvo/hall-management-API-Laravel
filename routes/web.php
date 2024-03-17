@@ -121,8 +121,7 @@ $router->group(['prefix'=>'api'],function() use ($router){
        $router->get('/getAllBooks','LibraryController@getAllBooks');
        $router->get('/searchQueryBook','LibraryController@searchQueryBook');
        $router->post('/bookIssue','LibraryController@bookIssue');
-       $router->get('/bookPurchedHistoryByStudentID','LibraryController@bookPurchedHistoryByStudentID');
-       $router->get('/bookPurchedHistoryForAdmin','LibraryController@bookPurchedHistoryForAdmin');
+       $router->get('/bookPurchedHistory','LibraryController@bookPurchedHistory');
        $router->get('/cardIssue','LibraryController@cardIssue');
        $router->get('/deleteAllCard','LibraryController@deleteAllCard');
        $router->get('/checkCardIssue','LibraryController@checkCardIssue');
