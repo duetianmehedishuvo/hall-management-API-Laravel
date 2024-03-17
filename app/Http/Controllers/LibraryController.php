@@ -139,40 +139,6 @@ class LibraryController extends Controller
         }
     }
 
-    function getAllRoomsByYearRoomNo(Request $request)
-    {
-        $roomNo = $request->input('roomNo');
-
-        $activeStudents = DB::table('roomtable')
-            ->leftJoin('studenttable', 'studenttable.studentID', '=', 'roomtable.studentID')
-            ->select(
-                'roomtable.id',
-                'roomtable.isAvaible',
-                'roomtable.studentID',
-                'roomtable.year',
-                'roomtable.updated_at',
-                'studenttable.name',
-                'studenttable.department'
-            )->where(['roomtable.roomNo' => $roomNo, 'roomtable.isAvaible' => 1])->orderBy('roomtable.id', 'desc')->get();
-
-
-        $inactiveStudents = DB::table('roomtable')
-            ->leftJoin('studenttable', 'studenttable.studentID', '=', 'roomtable.studentID')
-            ->select(
-                'roomtable.id',
-                'roomtable.isAvaible',
-                'roomtable.studentID',
-                'roomtable.year',
-                'roomtable.updated_at',
-                'studenttable.name',
-                'studenttable.department'
-            )->where(['roomtable.roomNo' => $roomNo, 'roomtable.isAvaible' => 0])->orderBy('roomtable.year', 'desc')->get();
-
-        return response()->json(['activeStudents' => $activeStudents, 'inactiveStudents' => $inactiveStudents])->setStatusCode(200);
-
-    }
-
-
     function bookPurchedHistory(Request $request)
     {
         $studentID = $request->input('studentID');
@@ -218,6 +184,32 @@ class LibraryController extends Controller
         }
 
         $result = $result->orderBy('book_purched_table.updated_at', 'desc')->paginate(10);
+
+        if ($result == true) {
+            return response()->json($result)->setStatusCode(200);
+        } else {
+            return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
+
+        }
+    }
+
+
+    function bookHistory(Request $request)
+    {
+        $bookID = $request->input('bookID');
+
+
+        $selectColumns = ['book_purched_table.id',
+            'book_purched_table.book_id',
+            'book_purched_table.student_id',
+            'studenttable.name',
+            'studenttable.department'
+            ];
+
+        $result = DB::table('book_purched_table')
+            ->leftJoin('studenttable', 'studenttable.studentID', '=', 'book_purched_table.student_id')
+            ->select($selectColumns)->where('book_purched_table.book_id', $bookID)
+            ->orderBy('book_purched_table.updated_at', 'desc')->paginate(10);
 
         if ($result == true) {
             return response()->json($result)->setStatusCode(200);
