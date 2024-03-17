@@ -123,6 +123,9 @@ $router->group(['prefix'=>'api'],function() use ($router){
        $router->post('/bookIssue','LibraryController@bookIssue');
        $router->get('/bookPurchedHistoryByStudentID','LibraryController@bookPurchedHistoryByStudentID');
        $router->get('/bookPurchedHistoryForAdmin','LibraryController@bookPurchedHistoryForAdmin');
+       $router->get('/cardIssue','LibraryController@cardIssue');
+       $router->get('/deleteAllCard','LibraryController@deleteAllCard');
+       $router->get('/checkCardIssue','LibraryController@checkCardIssue');
 
 
    });

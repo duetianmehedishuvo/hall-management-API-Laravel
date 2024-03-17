@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\BookModel;
 use App\Models\BookPurchedModel;
+use App\Models\CardHelperModel;
+use App\Models\RegistrationModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use \Carbon\Carbon;
@@ -168,7 +170,7 @@ class LibraryController extends Controller
         if ($type == 'All') {
             $result = BookPurchedModel::where('status', 0)->orWhere('status', 2)->orderBy('updated_at', 'desc')->paginate(10);
         } else if ($type == 'Renew') {
-            $result = BookPurchedModel::where([ 'status' => 0])->orderBy('updated_at', 'desc')->paginate(10);
+            $result = BookPurchedModel::where(['status' => 0])->orderBy('updated_at', 'desc')->paginate(10);
         } else if ($type == 'Return') {
             $result = BookPurchedModel::where(['status' => 2])->orderBy('updated_at', 'desc')->paginate(10);
         }
@@ -180,6 +182,61 @@ class LibraryController extends Controller
             return response()->json(['message' => 'Failed!! Plase Try Again Later', 'statusCode' => 404])->setStatusCode(404);
 
         }
+    }
+
+
+    function cardIssue(Request $request)
+    {
+        $card_id = $request->input('card_id');
+
+        $card_result = CardHelperModel::get();
+
+        if ($card_result != null) {
+            CardHelperModel::truncate();
+        }
+
+        $result = RegistrationModel::where('rfID', $card_id)->get();
+
+        if (count($result) != 0) {
+            $resultInsert = CardHelperModel::insert([
+                'student_id' => $result[0]['studentID'],
+                'card_id' => $card_id]);
+
+            if ($resultInsert != 0) {
+                return response()->json(['message' => 'Card Valid', 'code' => 1])->setStatusCode(200);
+            } else {
+                return response()->json(['message' => 'Fail Please Try Again Later', 'statusCode' => 404, 'code' => 0])->setStatusCode(404);
+            }
+
+        } else {
+            return response()->json(['message' => 'Card Not Valid', 'statusCode' => 404, 'code' => 0])->setStatusCode(404);
+        }
+    }
+
+    function deleteAllCard(Request $request)
+    {
+        $card_result = CardHelperModel::get();
+        $result = 1;
+        if (count($card_result) != 0) {
+            $resultStatus = CardHelperModel::whereNotNull('id')->delete();
+            $result = $resultStatus;
+        }
+        if ($result == 1) {
+            return response()->json(['message' => 'Delete Successful', 'code' => 1])->setStatusCode(200);
+        } else {
+            return response()->json(['message' => 'Fail Please Try Again Later', 'statusCode' => 404, 'code' => 0])->setStatusCode(404);
+        }
+    }
+
+    function checkCardIssue(Request $request)
+    {
+        $card_result = CardHelperModel::get();
+        if (count($card_result) != 0) {
+            return response()->json($card_result[0])->setStatusCode(200);
+        } else {
+            return response()->json(['message' => 'Trying to finding card data', 'statusCode' => 404])->setStatusCode(404);
+        }
+
     }
 
 }
