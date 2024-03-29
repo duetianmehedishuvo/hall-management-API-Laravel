@@ -112,7 +112,7 @@ class MedicalController extends Controller
         if ($isAll == 0)
             $result = $result->where(['medical_service_table.student_id' => $studentID]);
 
-        $result = $result->orderBy('medical_service_table.id', 'desc')->paginate(10);
+        $result = $result->groupBy($selectColumns)->orderBy('medical_service_table.id', 'desc')->paginate(10);
 
         if ($result == true) {
             return response()->json($result)->setStatusCode(200);

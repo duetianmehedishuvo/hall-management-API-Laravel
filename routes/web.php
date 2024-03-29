@@ -119,6 +119,9 @@ $router->group(['prefix'=>'api'],function() use ($router){
        $router->get('/searchQueryBook','LibraryController@searchQueryBook');
        $router->post('/bookIssue','LibraryController@bookIssue');
        $router->get('/bookPurchedHistory','LibraryController@bookPurchedHistory');
+
+       // TODO: for Card
+
        $router->get('/cardIssue','LibraryController@cardIssue');
        $router->get('/deleteAllCard','LibraryController@deleteAllCard');
        $router->get('/checkCardIssue','LibraryController@checkCardIssue');

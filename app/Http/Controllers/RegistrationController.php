@@ -137,31 +137,20 @@ class RegistrationController extends Controller
 
     function updateFingerRFID(Request $request)
     {
+        $studentID = $request->input('studentID');
+        $rfID = $request->input('rfID');
+        $keyOff = "rfID";
 
-        $access_token = str_replace('Bearer ', '', $request->header('Authorization'));
-        $key = env('TOKEN_KEY');
-        $decoded = JWT::decode($access_token, new Key($key, 'HS256'));
-        $decoded_array = (array) $decoded;
-        $studentID = $decoded_array['studentID'];
-
-        $fingerRfID = $request->input('fingerRfID');
-        $isFinger = $request->input('isFinger');
-        if ($isFinger == 0) {
-            $keyOff = "fingerID";
-        } else {
-            $keyOff = "rfID";
-        }
-
-        $userCount = RegistrationModel::where('studentID', $studentID)->count();
+        $userCount = RegistrationModel::where($keyOff, $rfID)->count();
         if ($userCount >= 1) {
-            $result = RegistrationModel::where('studentID', $studentID)->update([$keyOff => $fingerRfID]);
+            $result = RegistrationModel::where('studentID', $studentID)->update([$keyOff => $rfID]);
             if ($result == true) {
-                return response()->json(['message' => 'Update successfull.', 'statusCode' => 200])->setStatusCode(200);
+                return response()->json(['message' => 'Update successfully.', 'statusCode' => 200])->setStatusCode(200);
             } else {
-                return response()->json(['message' => 'Finger or RfID not Updated', 'statusCode' => 404])->setStatusCode(404);
+                return response()->json(['message' => 'failed to updated', 'statusCode' => 404])->setStatusCode(404);
             }
         } else {
-            return response()->json(['message' => 'User not found', 'statusCode' => 404])->setStatusCode(404);
+            return response()->json(['message' => 'This rf card already added please check another one', 'statusCode' => 404])->setStatusCode(404);
         }
     }
 
@@ -230,7 +219,7 @@ class RegistrationController extends Controller
         $balance = $request->input('balance');
         $fromStudentID = $request->input('fromStudentID');
         $toStudentID = $request->input('toStudentID');
-        
+
         $transactionID = $this->set_number();
 
         $date = Carbon::now("Asia/Dhaka");

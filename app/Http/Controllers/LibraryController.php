@@ -224,18 +224,16 @@ class LibraryController extends Controller
     function cardIssue(Request $request)
     {
         $card_id = $request->input('card_id');
+        $for_registrtion = $request->input('for_registrtion');
 
         $card_result = CardHelperModel::get();
 
         if ($card_result != null) {
             CardHelperModel::truncate();
         }
-
-        $result = RegistrationModel::where('rfID', $card_id)->get();
-
-        if (count($result) != 0) {
+        if($for_registrtion!=0){
             $resultInsert = CardHelperModel::insert([
-                'student_id' => $result[0]['studentID'],
+                'student_id' => 0,
                 'card_id' => $card_id]);
 
             if ($resultInsert != 0) {
@@ -243,10 +241,25 @@ class LibraryController extends Controller
             } else {
                 return response()->json(['message' => 'Fail Please Try Again Later', 'statusCode' => 404, 'code' => 0])->setStatusCode(404);
             }
+        }else{
+            $result = RegistrationModel::where('rfID', $card_id)->get();
 
-        } else {
-            return response()->json(['message' => 'Card Not Valid', 'statusCode' => 404, 'code' => 0])->setStatusCode(404);
+            if (count($result) != 0) {
+                $resultInsert = CardHelperModel::insert([
+                    'student_id' => $result[0]['studentID'],
+                    'card_id' => $card_id]);
+
+                if ($resultInsert != 0) {
+                    return response()->json(['message' => 'Card Valid', 'code' => 1])->setStatusCode(200);
+                } else {
+                    return response()->json(['message' => 'Fail Please Try Again Later', 'statusCode' => 404, 'code' => 0])->setStatusCode(404);
+                }
+
+            } else {
+                return response()->json(['message' => 'Card Not Valid', 'statusCode' => 404, 'code' => 0])->setStatusCode(404);
+            }
         }
+
     }
 
     function deleteAllCard(Request $request)
