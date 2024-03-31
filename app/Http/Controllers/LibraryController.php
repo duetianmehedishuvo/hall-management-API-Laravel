@@ -231,13 +231,13 @@ class LibraryController extends Controller
         if ($card_result != null) {
             CardHelperModel::truncate();
         }
-        if($for_registrtion!=0){
+        if($for_registrtion!==0){
             $resultInsert = CardHelperModel::insert([
                 'student_id' => 0,
                 'card_id' => $card_id]);
 
             if ($resultInsert != 0) {
-                return response()->json(['message' => 'Card Valid', 'code' => 1])->setStatusCode(200);
+                return response()->json(['message' => 'Card Valid for all student', 'code' => 1])->setStatusCode(200);
             } else {
                 return response()->json(['message' => 'Fail Please Try Again Later', 'statusCode' => 404, 'code' => 0])->setStatusCode(404);
             }

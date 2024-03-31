@@ -288,7 +288,7 @@ class RegistrationController extends Controller
                 'studenttable.studentID',
                 'studenttable.name',
                 'studenttable.department'
-            )->orderBy('studenttable.id', 'desc')->get();
+            )->orderBy('studenttable.id', 'desc')->paginate(10);
 
     }
 

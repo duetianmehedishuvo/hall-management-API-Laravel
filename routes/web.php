@@ -13,7 +13,10 @@ $router->group(['prefix'=>'api'],function() use ($router){
    // TODO: for Authentication
     $router->post('/register', 'RegistrationController@onRegister');
     $router->post('/login', 'LoginController@onLogin');
-
+    $router->get('/checkStudentTodayMailByRFID','MealController@checkStudentTodayMailByRFID');
+    $router->get('/cardIssue','LibraryController@cardIssue');
+    $router->get('/deleteAllCard','LibraryController@deleteAllCard');
+    $router->get('/checkCardIssue','LibraryController@checkCardIssue');
 
    $router->group(['middleware'=>'auth'],function() use ($router){
 
@@ -58,7 +61,7 @@ $router->group(['prefix'=>'api'],function() use ($router){
         $router->delete('/deleteMealByID','MealController@deleteMealByID');
         $router->delete('/deleteGuestMealByID','MealController@deleteGuestMealByID');
         $router->get('/checkTodayMeal','MealController@checkTodayMeal');
-        $router->get('/checkStudentTodayMailByRFID','MealController@checkStudentTodayMailByRFID');
+
 
         // TODO: for Transaction Controllers
         $router->get('/getAllTransctionList','TransactionController@getAllTransctionList');
@@ -120,12 +123,7 @@ $router->group(['prefix'=>'api'],function() use ($router){
        $router->post('/bookIssue','LibraryController@bookIssue');
        $router->get('/bookPurchedHistory','LibraryController@bookPurchedHistory');
 
-       // TODO: for Card
-
-       $router->get('/cardIssue','LibraryController@cardIssue');
-       $router->get('/deleteAllCard','LibraryController@deleteAllCard');
-       $router->get('/checkCardIssue','LibraryController@checkCardIssue');
-
+      
 
    });
 });
