@@ -5,7 +5,7 @@
 1. Clone this repo
 
 ```
-git clone https://github.com/duetianmehedishuvo/lumen_practice_boiler_plate.git
+git clone https://github.com/duetianmehedishuvo/hall-management-API-Laravel.git
 ```
 
 2. Install packages
@@ -32,7 +32,7 @@ Please visit my Linkedin.
 
 Here Has This type off API:
 
-<h1>Welcome Titas Gas Service Api Limited. Creator By Mehedi Hasan Shuvo</h1>
+<h1>Welcome Our Personal Api Documentation Creator By Mehedi Hasan Shuvo</h1>
 
 $router->group(['prefix'=>'api'],function() use ($router){
 // TODO: for Authentication
